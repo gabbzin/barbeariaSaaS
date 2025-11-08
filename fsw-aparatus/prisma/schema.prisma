@@ -28,6 +28,7 @@ model BarbershopService {
   id           String     @id @default(uuid())
   name         String
   description  String
+  imageUrl     String
   barbershopId String
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id]) // Relação com a tabela da Barbearia
   priceInCents Int // Melhor forma de salvar valor monetário
