@@ -42,7 +42,7 @@ export const getDateAvailableTimeSlots = actionClient
     const session = await auth.api.getSession({ headers: await headers() });
 
     if (!session?.user) {
-      returnValidationErrors(inputSchema, {
+      return returnValidationErrors(inputSchema, {
         _errors: ["Unauthorized"],
       });
     }
@@ -54,6 +54,7 @@ export const getDateAvailableTimeSlots = actionClient
           gte: startOfDay(date),
           lte: endOfDay(date),
         },
+        cancelled: false,
       },
     });
 

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
 import { cancelBooking } from "@/app/_actions/cancel-booking";
@@ -56,12 +57,13 @@ export function CancelBooking({
   status,
 }: CancelBookingProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const { execute: executeCancelBooking } = useAction(cancelBooking, {
     onSuccess: () => {
       toast.success("Reserva cancelada com sucesso!");
       onOpenChange(false);
-      window.location.reload();
+      router.refresh();
     },
     onError: () => {
       toast.error("Erro ao cancelar reserva.");
@@ -177,7 +179,7 @@ export function CancelBooking({
           >
             Voltar
           </Button>
-          {status === "confirmed" && (
+          {status === "confirmed" && booking.date > new Date() && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" className="flex-1 rounded-full">

@@ -19,7 +19,7 @@ export const cancelBooking = actionClient
     });
 
     if (!session?.user) {
-      returnValidationErrors(inputSchema, {
+      return returnValidationErrors(inputSchema, {
         _errors: ["Unauthorized"],
       });
     }
@@ -31,13 +31,13 @@ export const cancelBooking = actionClient
     });
 
     if (!booking) {
-      returnValidationErrors(inputSchema, {
+      return returnValidationErrors(inputSchema, {
         _errors: ["Booking not found"],
       });
     }
 
     if (booking.userId !== session!.user.id) {
-      returnValidationErrors(inputSchema, {
+      return returnValidationErrors(inputSchema, {
         _errors: ["Unauthorized"],
       });
     }
@@ -48,6 +48,7 @@ export const cancelBooking = actionClient
       },
       data: {
         cancelled: true,
+        cancelledAt: new Date(),
       },
     });
 

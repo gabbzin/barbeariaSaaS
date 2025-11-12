@@ -19,17 +19,25 @@ export const createBooking = actionClient
       headers: await headers(),
     });
     if (!session?.user) {
-      returnValidationErrors(inputSchema, {
+      return returnValidationErrors(inputSchema, {
         _errors: ["Unauthorized"],
       });
     }
+
+    // Validação: não permitir agendamentos no passado
+    if (date < new Date()) {
+      return returnValidationErrors(inputSchema, {
+        _errors: ["Não é possível agendar em uma data passada."],
+      });
+    }
+
     const service = await prisma.barbershopService.findUnique({
       where: {
         id: serviceId,
       },
     });
     if (!service) {
-      returnValidationErrors(inputSchema, {
+      return returnValidationErrors(inputSchema, {
         _errors: ["Service not found"],
       });
     }
@@ -38,11 +46,11 @@ export const createBooking = actionClient
       where: {
         barbershopId: service.barbershopId,
         date,
+        cancelled: false,
       },
     });
     if (existingBooking) {
-      console.error("Já existe um agendamento para essa data.");
-      returnValidationErrors(inputSchema, {
+      return returnValidationErrors(inputSchema, {
         _errors: ["Já existe um agendamento para essa data."],
       });
     }
