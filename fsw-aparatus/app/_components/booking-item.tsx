@@ -7,6 +7,7 @@ interface BookingItemProps {
   barbershopName: string;
   barbershopImageUrl: string;
   date: Date;
+  status: "confirmed" | "finished";
 }
 
 const BookingItem = ({
@@ -14,13 +15,16 @@ const BookingItem = ({
   barbershopName,
   barbershopImageUrl,
   date,
+  status,
 }: BookingItemProps) => {
   return (
     <div>
       <Card className="flex w-full min-w-full flex-row items-center justify-between p-0">
         {/* ESQUERDA */}
         <div className="flex flex-1 flex-col gap-4 p-4">
-          <Badge variant={"default"}>Confirmado</Badge>
+          <Badge variant={status === "confirmed" ? "default" : "secondary"}>
+            {status === "confirmed" ? "CONFIRMADO" : "FINALIZADO"}
+          </Badge>
           <div className="flex flex-col gap-2">
             <p className="font-bold">{serviceName}</p>
             <div className="flex items-center gap-2">
