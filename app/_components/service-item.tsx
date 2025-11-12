@@ -45,6 +45,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
   });
 
   const handleDateSelect = (date: Date | undefined) => {
+    console.log(date);
     setSelectedDate(date);
   };
 

@@ -12,8 +12,12 @@ import {
   PageSectionTitle,
 } from "./_components/ui/page";
 import Footer from "./_components/footer";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const Home = async () => {
+  const session = await auth.api.getSession({ headers: await headers() });
+
   const recommendedBarbershops = await prisma.barbershop.findMany({
     orderBy: {
       name: "asc",
@@ -25,7 +29,7 @@ const Home = async () => {
       name: "desc",
     },
   });
-
+  
   return (
     <main>
       <Header />
@@ -40,12 +44,6 @@ const Home = async () => {
 
         <PageSection>
           <PageSectionTitle>Agendamentos</PageSectionTitle>
-          <BookingItem
-            serviceName="Corte de Cabelo"
-            barbershopName="Barbearia do Zé"
-            barbershopImageUrl="https://utfs.io/f/0522fdaf-0357-4213-8f52-1d83c3dcb6cd-18e.png"
-            date={new Date()}
-          />
         </PageSection>
 
         <PageSection>

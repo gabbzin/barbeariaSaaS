@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { LogInIcon, LogOutIcon } from "lucide-react";
+import { LogInIcon, LogOutIcon, MessageCircleIcon } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { SidebarMenu } from "./sidebar-menu";
+import Link from "next/link";
 
 const Header = () => {
   const { data: session } = authClient.useSession();
@@ -35,6 +36,11 @@ const Header = () => {
             <LogInIcon />
           </Button>
         )}
+        <Button variant={"outline"} size={"icon"} onClick={handleLogin} asChild>
+          <Link href={"/chat"}>
+            <MessageCircleIcon />
+          </Link>
+        </Button>
         <SidebarMenu />
       </div>
     </header>

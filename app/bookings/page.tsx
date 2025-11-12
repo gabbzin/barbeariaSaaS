@@ -14,15 +14,17 @@ const BookingsPage = async () => {
     redirect("/");
   }
 
-  const userId = session.user.id;
-
   const bookings = await prisma.booking.findMany({
-    where: { userId },
+    where: {
+      userId: session.user.id,
+    },
     include: {
       service: true,
       barbershop: true,
     },
-    orderBy: { date: "asc" },
+    orderBy: {
+      date: "asc",
+    },
   });
 
   const now = new Date();
