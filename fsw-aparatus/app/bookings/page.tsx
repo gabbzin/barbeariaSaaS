@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import Header from "@/app/_components/header";
 import Footer from "@/app/_components/footer";
 import BookingItem from "@/app/_components/booking-item";
+import { PageContainer, PageSection } from "../_components/ui/page";
 
 const BookingsPage = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -35,59 +36,78 @@ const BookingsPage = async () => {
   );
 
   return (
-    <>
-      <Header />
-
-      <div className="space-y-6 px-5 py-6">
-        <h1 className="text-xl font-bold">Agendamentos</h1>
-
-        <div className="space-y-3">
-          <h2 className="text-muted-foreground text-xs font-bold uppercase">
-            Confirmados
-          </h2>
-          {confirmedBookings.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              Você não tem agendamentos confirmados.
-            </p>
-          ) : (
-            confirmedBookings.map((booking) => (
-              <BookingItem
-                key={booking.id}
-                serviceName={booking.service.name}
-                barbershopName={booking.barbershop.name}
-                barbershopImageUrl={booking.barbershop.imageUrl}
-                date={booking.date}
-                status="confirmed"
-              />
-            ))
-          )}
-        </div>
-
-        <div className="space-y-3">
-          <h2 className="text-muted-foreground text-xs font-bold uppercase">
-            Finalizados
-          </h2>
-          {finishedBookings.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              Você não tem agendamentos finalizados.
-            </p>
-          ) : (
-            finishedBookings.map((booking) => (
-              <BookingItem
-                key={booking.id}
-                serviceName={booking.service.name}
-                barbershopName={booking.barbershop.name}
-                barbershopImageUrl={booking.barbershop.imageUrl}
-                date={booking.date}
-                status="finished"
-              />
-            ))
-          )}
-        </div>
+    <div className="flex min-h-screen flex-1 flex-col justify-between">
+      <div>
+        <Header />
+        <PageContainer>
+          <h1 className="text-xl font-bold">Agendamentos</h1>
+          <PageSection>
+            <h2 className="text-muted-foreground text-xs font-bold uppercase">
+              Confirmados
+            </h2>
+            {confirmedBookings.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Você não tem agendamentos confirmados.
+              </p>
+            ) : (
+              confirmedBookings.map((booking) => (
+                <BookingItem
+                  key={booking.id}
+                  booking={{
+                    id: booking.id,
+                    date: booking.date,
+                    service: {
+                      name: booking.service.name,
+                      priceInCents: booking.service.priceInCents,
+                    },
+                    barbershop: {
+                      name: booking.barbershop.name,
+                      address: booking.barbershop.address,
+                      imageUrl: booking.barbershop.imageUrl,
+                      phones: booking.barbershop.phones,
+                    },
+                  }}
+                  status="confirmed"
+                />
+              ))
+            )}
+          </PageSection>
+          <PageSection>
+            <h2 className="text-muted-foreground text-xs font-bold uppercase">
+              Finalizados
+            </h2>
+            {finishedBookings.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Você não tem agendamentos finalizados.
+              </p>
+            ) : (
+              finishedBookings.map((booking) => (
+                <BookingItem
+                  key={booking.id}
+                  booking={{
+                    id: booking.id,
+                    date: booking.date,
+                    service: {
+                      name: booking.service.name,
+                      priceInCents: booking.service.priceInCents,
+                    },
+                    barbershop: {
+                      name: booking.barbershop.name,
+                      address: booking.barbershop.address,
+                      imageUrl: booking.barbershop.imageUrl,
+                      phones: booking.barbershop.phones,
+                    },
+                  }}
+                  status="finished"
+                />
+              ))
+            )}
+          </PageSection>
+        </PageContainer>
       </div>
 
       <Footer />
-    </>
+    </div>
   );
 };
 

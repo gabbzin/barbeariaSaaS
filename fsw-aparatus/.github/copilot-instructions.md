@@ -21,6 +21,7 @@ Tecnologias utilizadas:
 - Evite ao máximo duplicidade de código. Ao repetir um código, crie componentes e/ou funções utilitárias.
 - Ao usar Figma MCP, **SEMPRE** seja 100% fiel ao Figma **CUSTE O QUE CUSTAR**.
 - Todo scroll horizontal **DEVE SEMPRE** esconder a barra de scroll usando className="[&::-webkit-scrollbar]:hidden"
+- Colocar **variantes** nos Badges, nunca estilize uma classe CSS diretamente em um Badge.
 
 <!-- Server Actions -->
 
@@ -42,4 +43,7 @@ Tecnologias utilizadas:
 - NUNCA escreva comentários no seu código.
 - NUNCA rode `npm run dev` para verificar se as mudanças estão funcionando.
 
-<!-- Fim das instruções do TypeScript -->
+<!-- shadcn/ui -->
+
+- AO criar sheets, **NUNCA** crie manualmnete o botão de fechar, o próprio Sheet do shadcn já tem um.
+- Ao criar sheets, **NUNCA** crie o separator entre o header e o conteúdo manualmente, o próprio SheetHeader já tem um border-bottom.
