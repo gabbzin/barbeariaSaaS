@@ -21,6 +21,8 @@ import { SpinLoader } from "./spinLoader";
 import { useQuery } from "@tanstack/react-query";
 import { getDateAvailableTimeSlots } from "../_actions/get-date-available-time-slots";
 import PagamentForm, { payMethods } from "./pagament-form";
+import { isPastTimeSlot } from "@/utils/isPastTimeSlot";
+import { Spinner } from "./ui/spinner";
 
 interface ServiceItemProps {
   service: BarbershopService & {
@@ -36,12 +38,16 @@ export function ServiceItem({ service }: ServiceItemProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [payMethod, setPayMethod] = useState<payMethods>("cartao");
 
+  const selectedDateKey = selectedDate
+    ? selectedDate.toISOString().split("T")[0]
+    : null;
+
   const { data: availableTimeSlots, isPending: isAvailableTimePending } =
     useQuery({
       queryKey: [
         "date-available-time-slots",
         service.barbershopId,
-        selectedDate,
+        selectedDateKey,
       ],
       queryFn: () =>
         getDateAvailableTimeSlots({
@@ -159,21 +165,19 @@ export function ServiceItem({ service }: ServiceItemProps) {
               <Separator />
 
               <div className="flex px-5">
-                <div className="flex items-center gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-                  {isAvailableTimePending && <SpinLoader />}
+                <div className="flex flex-1 items-center gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+                  {isAvailableTimePending && (
+                    <div className="flex w-full flex-1 justify-center">
+                      <Spinner />
+                    </div>
+                  )}
                   {availableTimeSlots?.data?.map((time) => (
                     <Button
                       key={time}
                       variant={selectedTime === time ? "default" : "secondary"}
                       size={"sm"}
                       onClick={() => setSelectedTime(time)}
-                      disabled={
-                        time <
-                        new Date().toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      }
+                      disabled={isPastTimeSlot(time, selectedDate!)}
                     >
                       {time}
                     </Button>
