@@ -43,17 +43,23 @@ export function ServiceItem({ service }: ServiceItemProps) {
     : null;
 
   const { data: availableTimeSlots, isPending: isAvailableTimePending } =
-    useQuery({
+    useQuery<string[]>({
       queryKey: [
         "date-available-time-slots",
         service.barbershopId,
         selectedDateKey,
       ],
-      queryFn: () =>
-        getDateAvailableTimeSlots({
+      queryFn: async () => {
+        const result = await getDateAvailableTimeSlots({
           barbershopId: service.barbershopId,
           date: selectedDate!,
-        }),
+        });
+
+        if (Array.isArray(result)) return result;
+        if (Array.isArray(result?.data)) return result.data;
+
+        return [];
+      },
       enabled: !!selectedDate,
     });
 
@@ -171,7 +177,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
                       <Spinner />
                     </div>
                   )}
-                  {availableTimeSlots?.data?.map((time) => (
+                  {availableTimeSlots?.map((time) => (
                     <Button
                       key={time}
                       variant={selectedTime === time ? "default" : "secondary"}
