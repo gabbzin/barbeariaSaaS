@@ -15,7 +15,9 @@ export const POST = async (request: Request) => {
   }
 
   const text = await request.text();
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2025-07-30.basil",
+  });
 
   const event = stripe.webhooks.constructEvent(
     text,
@@ -34,7 +36,17 @@ export const POST = async (request: Request) => {
     const serviceId = session.metadata?.serviceId;
     const barbershopId = session.metadata?.barbershopId;
     const userId = session.metadata?.userId;
+    const eventId = event.id;
 
+    const exists = await prisma.booking.findUnique({
+      where: {
+        stripeEventId: eventId,
+      },
+    });
+
+    if (exists) {
+      return NextResponse.json({ received: true });
+    }
     if (!date || !serviceId || !barbershopId || !userId) {
       return NextResponse.error();
     }
@@ -61,6 +73,7 @@ export const POST = async (request: Request) => {
         date,
         userId,
         stripeChargeId: chargeId || null,
+        stripeEventId: eventId,
       },
     });
   }

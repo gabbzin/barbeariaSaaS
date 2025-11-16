@@ -49,6 +49,7 @@ model Booking {
   cancelled      Boolean?          @default(false)
   cancelledAt    DateTime?         @db.Timestamptz
   stripeChargeId String?
+  stripeEventId  String?           @unique
 }
 
 model User {
