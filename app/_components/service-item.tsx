@@ -23,6 +23,7 @@ import { getDateAvailableTimeSlots } from "../_actions/get-date-available-time-s
 import PagamentForm, { payMethods } from "./pagament-form";
 import { isPastTimeSlot } from "@/utils/isPastTimeSlot";
 import { Spinner } from "./ui/spinner";
+import { createBookingCheckoutSession } from "../_actions/create-booking-checkout-session";
 
 interface ServiceItemProps {
   service: BarbershopService & {
@@ -34,7 +35,12 @@ export function ServiceItem({ service }: ServiceItemProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
 
-  const { executeAsync, isPending } = useAction(createBooking);
+  const { executeAsync, isPending: isBookingPending } =
+    useAction(createBooking);
+  const { executeAsync: executeCheckoutAsync, isPending: isCheckoutPending } =
+    useAction(createBookingCheckoutSession);
+
+  const isPending = isBookingPending || isCheckoutPending;
   const [sheetOpen, setSheetOpen] = useState(false);
   const [payMethod, setPayMethod] = useState<payMethods>("cartao");
 
@@ -89,6 +95,8 @@ export function ServiceItem({ service }: ServiceItemProps) {
   const handleConfirm = async () => {
     if (!selectedDate || !selectedTime) return;
 
+    let result;
+
     const timeSplitted = selectedTime.split(":");
     const hours = timeSplitted[0];
     const minutes = timeSplitted[1];
@@ -97,15 +105,28 @@ export function ServiceItem({ service }: ServiceItemProps) {
 
     date.setHours(Number(hours), Number(minutes), 0, 0);
 
-    const result = await executeAsync({
-      serviceId: service.id,
-      date,
-    });
+    if (payMethod === "cartao") {
+      result = await executeCheckoutAsync({
+        serviceId: service.id,
+        date,
+      });
+    } else {
+      result = await executeAsync({
+        serviceId: service.id,
+        date,
+      });
+    }
 
     if (result.serverError || result.validationErrors) {
       toast.error(result.validationErrors?._errors?.[0]);
-
       return;
+    }
+
+    if (payMethod === "cartao" && result.data && "url" in result.data) {
+      if (result.data.url) {
+        window.location.href = result.data.url;
+        return;
+      }
     }
 
     toast.success("Agendamento criado com sucesso!");
