@@ -13,7 +13,7 @@ export const GoogleButton = () => {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: "/",
       });
     } catch (error) {
       console.error("Erro no login social", error);

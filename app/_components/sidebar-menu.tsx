@@ -13,6 +13,7 @@ import { MenuIcon, Home, Calendar, LogOut, LogIn } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
   "Cabelo",
@@ -26,11 +27,7 @@ const CATEGORIES = [
 export const SidebarMenu = () => {
   const { data: session } = authClient.useSession();
 
-  const handleLogin = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-    });
-  };
+  const { push } = useRouter();
 
   const handleLogout = async () => {
     await authClient.signOut();
@@ -76,7 +73,7 @@ export const SidebarMenu = () => {
               </p>
             </div>
             <Button
-              onClick={handleLogin}
+              onClick={() => push("/login")}
               className="gap-3 rounded-full px-6"
               size="sm"
             >

@@ -1,7 +1,7 @@
-import LoginForm from "./login-form";
 import Image from "next/image";
+import RegisterForm from "./register-form";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center">
       <Image
@@ -10,7 +10,7 @@ export default function LoginPage() {
         fill
         className="-z-10 object-cover brightness-50"
       />
-      <LoginForm />
+      <RegisterForm />
     </main>
   );
 }

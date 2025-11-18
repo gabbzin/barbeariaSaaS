@@ -1,4 +1,10 @@
-import { Control, Controller, FieldValues, Path } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldValues,
+  Path,
+  useFormContext,
+} from "react-hook-form";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
@@ -7,7 +13,7 @@ interface InputFormProps<T extends FieldValues> {
   name: Path<T>;
   placeholder?: string;
   type?: string;
-  control: Control<T>;
+  control?: Control<T>;
 }
 
 const InputForm = <T extends FieldValues>({
@@ -15,10 +21,19 @@ const InputForm = <T extends FieldValues>({
   type = "text",
   name,
   placeholder,
-  control,
+  control: propsControl,
 }: InputFormProps<T>) => {
+  const context = useFormContext<T>();
+  const control = propsControl || context?.control;
+
+  if (!control) {
+    throw new Error(
+      "InputForm deve ser usado dentro de um FormProvider ou receber a prop 'control'.",
+    );
+  }
+
   return (
-    <div>
+    <div className="space-y-2">
       <Label>{label}</Label>
       <Controller
         control={control}
