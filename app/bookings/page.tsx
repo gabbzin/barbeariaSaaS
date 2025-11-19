@@ -19,8 +19,11 @@ const BookingsPage = async () => {
       userId: session.user.id,
     },
     include: {
-      service: true,
-      barbershop: true,
+      service: {
+        include: {
+          barber: true,
+        },
+      },
     },
     orderBy: {
       date: "asc",
@@ -64,11 +67,10 @@ const BookingsPage = async () => {
                       name: booking.service.name,
                       priceInCents: booking.service.priceInCents,
                     },
-                    barbershop: {
-                      name: booking.barbershop.name,
-                      address: booking.barbershop.address,
-                      imageUrl: booking.barbershop.imageUrl,
-                      phones: booking.barbershop.phones,
+                    barber: {
+                      name: booking.service.barber.name,
+                      imageUrl: booking.service.barber.imageUrl,
+                      phone: booking.service.barber.phone,
                     },
                   }}
                   status="confirmed"
@@ -95,11 +97,10 @@ const BookingsPage = async () => {
                       name: booking.service.name,
                       priceInCents: booking.service.priceInCents,
                     },
-                    barbershop: {
-                      name: booking.barbershop.name,
-                      address: booking.barbershop.address,
-                      imageUrl: booking.barbershop.imageUrl,
-                      phones: booking.barbershop.phones,
+                    barber: {
+                      name: booking.service.barber.name,
+                      imageUrl: booking.service.barber.imageUrl,
+                      phone: booking.service.barber.phone,
                     },
                   }}
                   status="cancelled"
@@ -126,11 +127,10 @@ const BookingsPage = async () => {
                       name: booking.service.name,
                       priceInCents: booking.service.priceInCents,
                     },
-                    barbershop: {
-                      name: booking.barbershop.name,
-                      address: booking.barbershop.address,
-                      imageUrl: booking.barbershop.imageUrl,
-                      phones: booking.barbershop.phones,
+                    barber: {
+                      name: booking.service.barber.name,
+                      imageUrl: booking.service.barber.imageUrl,
+                      phone: booking.service.barber.phone,
                     },
                   }}
                   status="finished"

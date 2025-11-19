@@ -13,43 +13,71 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
-model Barbershop {
-  id          String              @id @default(uuid())
-  name        String
-  address     String
-  description String
-  imageUrl    String
-  phones      String[]
-  services    BarbershopService[]
-  bookings    Booking[]
+// model Barbershop {
+//   id          String              @id @default(uuid())
+//   name        String
+//   address     String
+//   description String
+//   imageUrl    String
+//   phones      String[]
+//   services    BarberService[]
+//   bookings    Booking[]
+
+//   barbers Barber[]
+// }
+
+model Barber {
+  id       String   @id @default(uuid())
+  name     String
+  email    String   @unique
+  imageUrl String   @default("https://3tlh7aktl6.ufs.sh/f/tcFRjMXVSkQ0Asb1IxZDwZ30bIph8P2qjXfOcVJmTvFtnMxi")
+  phone    String[]
+  // barbershopId String
+  // barbershop Barbershop @relation(fields: [barbershopId], references: [id])
+
+  services BarberService[]
+
+  @@index([email])
 }
 
-model BarbershopService {
-  id           String     @id @default(uuid())
+model BarberService {
+  id           String @id @default(uuid())
   name         String
   description  String
   imageUrl     String
-  barbershopId String
-  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
   priceInCents Int
-  bookings     Booking[]
+
+  // barbershopId String
+  // barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+
+  barberId String
+  barber   Barber @relation(fields: [barberId], references: [id])
+
+  bookings Booking[]
+
+  @@index([barberId])
 }
 
 model Booking {
-  id             String            @id @default(uuid())
+  id             String        @id @default(uuid())
   serviceId      String
-  service        BarbershopService @relation(fields: [serviceId], references: [id])
-  barbershopId   String
-  barbershop     Barbershop        @relation(fields: [barbershopId], references: [id])
-  userId         String
-  user           User              @relation(fields: [userId], references: [id])
-  date           DateTime          @db.Timestamptz
-  cancelled      Boolean?          @default(false)
-  cancelledAt    DateTime?         @db.Timestamptz
+  service        BarberService @relation(fields: [serviceId], references: [id])
+  // barbershopId   String
+  // barbershop     Barbershop        @relation(fields: [barbershopId], references: [id])
+  date           DateTime      @db.Timestamptz
+  cancelled      Boolean?      @default(false)
+  cancelledAt    DateTime?     @db.Timestamptz
   stripeChargeId String?
-  stripeEventId  String?           @unique
+  stripeEventId  String?       @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([serviceId])
+  @@index([date])
 }
 
 model User {

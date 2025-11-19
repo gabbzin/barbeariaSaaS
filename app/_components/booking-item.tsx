@@ -14,11 +14,10 @@ interface BookingItemProps {
       name: string;
       priceInCents: number;
     };
-    barbershop: {
+    barber: {
       name: string;
-      address: string;
       imageUrl: string;
-      phones: string[];
+      phone: string;
     };
   };
   status: "confirmed" | "finished" | "cancelled";
@@ -54,9 +53,9 @@ const BookingItem = ({ booking, status }: BookingItemProps) => {
             <p className="font-bold">{booking.service.name}</p>
             <div className="flex items-center gap-2">
               <Avatar>
-                <AvatarImage src={booking.barbershop.imageUrl} />
+                <AvatarImage src={booking.barber.imageUrl} />
               </Avatar>
-              <p className="text-xs font-bold">{booking.barbershop.name}</p>
+              <p className="text-xs font-bold">{booking.barber.name}</p>
             </div>
           </div>
         </div>

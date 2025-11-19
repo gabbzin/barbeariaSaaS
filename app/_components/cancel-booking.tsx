@@ -40,11 +40,10 @@ interface CancelBookingProps {
       name: string;
       priceInCents: number;
     };
-    barbershop: {
+    barber: {
       name: string;
-      address: string;
       imageUrl: string;
-      phones: string[];
+      phone: string;
     };
   };
   status: "confirmed" | "finished" | "cancelled";
@@ -113,13 +112,12 @@ export function CancelBooking({
             />
             <Card className="absolute bottom-5 left-1/2 flex w-[calc(100%-40px)] -translate-x-1/2 items-center gap-3 p-5">
               <Avatar className="size-12">
-                <AvatarImage src={booking.barbershop.imageUrl} />
+                <AvatarImage src={booking.barber.imageUrl} />
               </Avatar>
               <div className="flex-1 overflow-hidden">
                 <h3 className="truncate font-bold">
-                  {booking.barbershop.name}
+                  {booking.barber.name}
                 </h3>
-                <p className="truncate text-xs">{booking.barbershop.address}</p>
               </div>
             </Card>
           </div>
@@ -158,15 +156,13 @@ export function CancelBooking({
             </div>
             <div className="text-muted-foreground flex items-center justify-between text-sm">
               <p>Barbearia</p>
-              <p className="text-right">{booking.barbershop.name}</p>
+              <p className="text-right">{booking.barber.name}</p>
             </div>
           </Card>
 
           {/* Telefones */}
           <div className="flex flex-col gap-3">
-            {booking.barbershop.phones.map((phone) => (
-              <PhoneItem key={phone} phone={phone} />
-            ))}
+            <PhoneItem phone={booking.barber.phone} />
           </div>
         </div>
 

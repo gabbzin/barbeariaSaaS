@@ -29,30 +29,16 @@ async function seedDatabase() {
     ];
     // Nomes criativos para as barbearias
     const creativeNames = [
-      "Barbearia Vintage",
-      "Corte & Estilo",
-      "Barba & Navalha",
-      "The Dapper Den",
-      "Cabelo & Cia.",
-      "Machado & Tesoura",
-      "Barbearia Elegance",
-      "Aparência Impecável",
-      "Estilo Urbano",
-      "Estilo Clássico",
-    ];
-
-    // Endereços fictícios para as barbearias
-    const addresses = [
-      "Rua da Barbearia, 123",
-      "Avenida dos Cortes, 456",
-      "Praça da Barba, 789",
-      "Travessa da Navalha, 101",
-      "Alameda dos Estilos, 202",
-      "Estrada do Machado, 303",
-      "Avenida Elegante, 404",
-      "Praça da Aparência, 505",
-      "Rua Urbana, 606",
-      "Avenida Clássica, 707",
+      "João Cortes",
+      "Pedro Navalha",
+      "Carlos Fade",
+      "Rafael Estilo",
+      "Lucas Ferreira",
+      "Vitor da Navalha",
+      "André Cabeleira",
+      "Fernando Lima",
+      "Daniel Corte Fino",
+      "Henrique Barbeiro",
     ];
 
     const services = [
@@ -104,29 +90,26 @@ async function seedDatabase() {
     const barbershops = [];
     for (let i = 0; i < 10; i++) {
       const name = creativeNames[i];
-      const address = addresses[i];
       const imageUrl = images[i];
 
-      const barbershop = await prisma.barbershop.create({
+      const barber = await prisma.barber.create({
         data: {
           name,
-          address,
+          email: `contato.${name.replace(" ", "").toLowerCase()}@gmail.com`,
           imageUrl: imageUrl,
-          phones: ["(11) 99999-9999", "(11) 99999-9999"],
-          description:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac augue ullamcorper, pharetra orci mollis, auctor tellus. Phasellus pharetra erat ac libero efficitur tempus. Donec pretium convallis iaculis. Etiam eu felis sollicitudin, cursus mi vitae, iaculis magna. Nam non erat neque. In hac habitasse platea dictumst. Pellentesque molestie accumsan tellus id laoreet.",
+          phone: ["(11) 99999-9999"],
         },
       });
 
       for (const service of services) {
-        await prisma.barbershopService.create({
+        await prisma.barberService.create({
           data: {
             name: service.name,
             description: service.description,
             priceInCents: service.price * 100,
-            barbershop: {
+            barber: {
               connect: {
-                id: barbershop.id,
+                id: barber.id,
               },
             },
             imageUrl: service.imageUrl,
@@ -134,7 +117,7 @@ async function seedDatabase() {
         });
       }
 
-      barbershops.push(barbershop);
+      barbershops.push(barber);
     }
 
     // Fechar a conexão com o banco de dados

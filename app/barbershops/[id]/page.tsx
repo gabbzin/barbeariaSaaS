@@ -9,10 +9,10 @@ import Link from "next/link";
 import { PhoneItem } from "@/app/_components/phone-item";
 import Footer from "@/app/_components/footer";
 
-const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
+const BarberPage = async (props: PageProps<"/barbershops/[id]">) => {
   const { id } = await props.params;
 
-  const barbershop = await prisma.barbershop.findUnique({
+  const barber = await prisma.barber.findUnique({
     where: {
       id,
     },
@@ -21,7 +21,7 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
     },
   });
 
-  if (!barbershop) {
+  if (!barber) {
     return notFound();
   }
 
@@ -30,8 +30,8 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
       {/* Header com Banner */}
       <div className="relative h-[297px] w-full">
         <Image
-          src={barbershop.imageUrl}
-          alt={barbershop.name}
+          src={barber.imageUrl}
+          alt={barber.name}
           fill
           className="object-cover"
           priority
@@ -59,30 +59,28 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
           <div className="mb-1 flex items-center gap-2">
             <div className="relative size-[30px] overflow-hidden rounded-full">
               <Image
-                src={barbershop.imageUrl}
-                alt={barbershop.name}
+                src={barber.imageUrl}
+                alt={barber.name}
                 fill
                 className="object-cover"
               />
             </div>
-            <h1 className="text-foreground text-xl font-bold">
-              {barbershop.name}
-            </h1>
+            <h1 className="text-foreground text-xl font-bold">{barber.name}</h1>
           </div>
-          <p className="text-muted-foreground text-sm">{barbershop.address}</p>
+          {/* <p className="text-muted-foreground text-sm">{barber.address}</p> */}
         </div>
 
         <Separator />
 
         {/* Sobre Nós */}
-        <div className="space-y-3 px-5">
+        {/* <div className="space-y-3 px-5">
           <h2 className="text-foreground text-xs font-bold uppercase">
             Sobre Nós
           </h2>
           <p className="text-foreground text-sm leading-relaxed">
-            {barbershop.description}
+            {barber.description}
           </p>
-        </div>
+        </div> */}
 
         <Separator />
 
@@ -92,10 +90,10 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
             Serviços
           </h2>
           <div className="space-y-3">
-            {barbershop.services.map((service) => (
+            {barber.services.map((service) => (
               <ServiceItem
                 key={service.id}
-                service={{ ...service, barbershop }}
+                service={{ ...service, barbershop: barber }}
               />
             ))}
           </div>
@@ -109,7 +107,7 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
             Contato
           </h2>
           <div className="space-y-3">
-            {barbershop.phones.map((phone, index) => (
+            {barber.phone.map((phone, index) => (
               <div
                 key={index}
                 className="flex w-full flex-col items-center justify-between"
@@ -127,4 +125,4 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
   );
 };
 
-export default BarbershopPage;
+export default BarberPage;

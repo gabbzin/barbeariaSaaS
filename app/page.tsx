@@ -19,13 +19,13 @@ import { CheckCircleIcon, TriangleAlertIcon } from "lucide-react";
 const Home = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  const recommendedBarbershops = await prisma.barbershop.findMany({
+  const recommendedBarbershops = await prisma.barber.findMany({
     orderBy: {
       name: "asc",
     },
   });
 
-  const popularBarbershops = await prisma.barbershop.findMany({
+  const popularBarbershops = await prisma.barber.findMany({
     orderBy: {
       name: "desc",
     },

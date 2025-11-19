@@ -5,7 +5,6 @@ import GenericForm from "@/app/_components/form/generic-form";
 import {
   loginSchemaType,
   registerSchema,
-  registerSchemaType,
 } from "@/schemas/userSchema";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation"; // Use router.push em Client Components
