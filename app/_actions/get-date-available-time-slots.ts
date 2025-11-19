@@ -49,7 +49,9 @@ export const getDateAvailableTimeSlots = actionClient
 
     const bookings = await prisma.booking.findMany({
       where: {
-        barbershopId,
+        service: {
+          barberId: barbershopId,
+        },
         date: {
           gte: startOfDay(date),
           lte: endOfDay(date),

@@ -33,7 +33,7 @@ export const createBooking = actionClient
       });
     }
 
-    const service = await prisma.barbershopService.findUnique({
+    const service = await prisma.barberService.findUnique({
       where: {
         id: serviceId,
       },
@@ -46,9 +46,9 @@ export const createBooking = actionClient
     // verificar se já existe agendamento para essa data
     const existingBooking = await prisma.booking.findFirst({
       where: {
-        barbershopId: service.barbershopId,
         date,
         cancelled: false,
+        serviceId,
       },
     });
     if (existingBooking) {
@@ -60,7 +60,6 @@ export const createBooking = actionClient
     const booking = await prisma.booking.create({
       data: {
         userId: session!.user.id,
-        barbershopId: service.barbershopId,
         serviceId: service.id,
         date,
       },

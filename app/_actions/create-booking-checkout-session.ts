@@ -34,12 +34,12 @@ export const createBookingCheckoutSession = actionClient
       });
     }
 
-    const service = await prisma.barbershopService.findUnique({
+    const service = await prisma.barberService.findUnique({
       where: {
         id: serviceId,
       },
       include: {
-        barbershop: true,
+        barber: true,
       },
     });
 
@@ -60,7 +60,7 @@ export const createBookingCheckoutSession = actionClient
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}`,
       metadata: {
         serviceId: serviceId,
-        barbershopId: service.barbershopId,
+        barberId: service.barberId,
         userId: session.user.id,
         date: date.toISOString(),
       },
@@ -70,7 +70,7 @@ export const createBookingCheckoutSession = actionClient
             currency: "brl",
             unit_amount: service.priceInCents,
             product_data: {
-              name: `${service.barbershop.name} - ${service.name} em ${format(date, "dd/MM/yyyy HH:mm")}`,
+              name: `${service.barber.name} - ${service.name} em ${format(date, "dd/MM/yyyy HH:mm")}`,
               description: `${service.description}`,
               images: [service.imageUrl],
             },
