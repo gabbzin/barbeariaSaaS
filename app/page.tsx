@@ -3,7 +3,6 @@ import Header from "./_components/header";
 import SearchInput from "./_components/search-input";
 import banner from "../public/banner.png";
 import { prisma } from "@/lib/prisma";
-import BarbershopItem from "./_components/barbershop-item";
 import {
   PageContainer,
   PageSection,
@@ -15,6 +14,7 @@ import { Alert, AlertTitle } from "./_components/ui/alert";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { CheckCircleIcon, TriangleAlertIcon } from "lucide-react";
+import BarberItem from "./_components/barber-item";
 
 const Home = async () => {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -76,8 +76,8 @@ const Home = async () => {
         <PageSection>
           <PageSectionTitle>Barbearias</PageSectionTitle>
           <PageSectionScroller>
-            {recommendedBarbershops.map((barbershop) => (
-              <BarbershopItem key={barbershop.id} barber={barbershop} />
+            {recommendedBarbershops.map((barber) => (
+              <BarberItem key={barber.id} barber={barber} />
             ))}
           </PageSectionScroller>
         </PageSection>
@@ -85,8 +85,8 @@ const Home = async () => {
         <PageSection>
           <PageSectionTitle>Recomendados</PageSectionTitle>
           <PageSectionScroller>
-            {popularBarbershops.map((barbershop) => (
-              <BarbershopItem key={barbershop.id} barber={barbershop} />
+            {popularBarbershops.map((barber) => (
+              <BarberItem key={barber.id} barber={barber} />
             ))}
           </PageSectionScroller>
         </PageSection>

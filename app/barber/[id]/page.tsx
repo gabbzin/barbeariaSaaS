@@ -9,7 +9,7 @@ import Link from "next/link";
 import { PhoneItem } from "@/app/_components/phone-item";
 import Footer from "@/app/_components/footer";
 
-const BarberPage = async (props: PageProps<"/barbershops/[id]">) => {
+const BarberPage = async (props: PageProps<"/barber/[id]">) => {
   const { id } = await props.params;
 
   const barber = await prisma.barber.findUnique({
