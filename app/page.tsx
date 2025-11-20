@@ -74,7 +74,7 @@ const Home = async () => {
         </PageSection>
 
         <PageSection>
-          <PageSectionTitle>Barbearias</PageSectionTitle>
+          <PageSectionTitle>Barbeiros</PageSectionTitle>
           <PageSectionScroller>
             {recommendedBarbershops.map((barber) => (
               <BarberItem key={barber.id} barber={barber} />
