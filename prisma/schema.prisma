@@ -16,6 +16,91 @@ datasource db {
   // directUrl = env("DIRECT_URL")
 }
 
+// ============================================
+// ENUMS
+// ============================================
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+}
+
+// ============================================
+// AUTHENTICATION & USER MODELS
+// ============================================
+
+model User {
+  id            String   @id
+  name          String
+  email         String
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+
+  // Relations
+  sessions            Session[]
+  accounts            Account[]
+  bookings            Booking[]
+  activeSubscription  UserSubscription?  @relation("ActiveSubscription")
+  subscriptionHistory UserSubscription[] @relation("SubscriptionHistory")
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+// ============================================
+// BARBERSHOP MODELS
+// ============================================
+
 // model Barbershop {
 //   id          String              @id @default(uuid())
 //   name        String
@@ -25,8 +110,7 @@ datasource db {
 //   phones      String[]
 //   services    BarberService[]
 //   bookings    Booking[]
-
-//   barbers Barber[]
+//   barbers     Barber[]
 // }
 
 model Barber {
@@ -35,8 +119,9 @@ model Barber {
   email    String   @unique
   imageUrl String   @default("https://3tlh7aktl6.ufs.sh/f/tcFRjMXVSkQ0Asb1IxZDwZ30bIph8P2qjXfOcVJmTvFtnMxi")
   phone    String[]
+
   // barbershopId String
-  // barbershop Barbershop @relation(fields: [barbershopId], references: [id])
+  // barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
 
   services BarberService[]
 
@@ -61,82 +146,92 @@ model BarberService {
   @@index([barberId])
 }
 
-model Booking {
-  id             String        @id @default(uuid())
-  serviceId      String
-  service        BarberService @relation(fields: [serviceId], references: [id])
-  // barbershopId   String
-  // barbershop     Barbershop        @relation(fields: [barbershopId], references: [id])
-  date           DateTime      @db.Timestamptz
-  cancelled      Boolean?      @default(false)
-  cancelledAt    DateTime?     @db.Timestamptz
-  stripeChargeId String?
-  stripeEventId  String?       @unique
+// ============================================
+// SUBSCRIPTION MODELS
+// ============================================
 
+model Subscription {
+  id           String @id @default(uuid())
+  name         String
+  description  String
+  priceInCents Int
+
+  userSubscriptions UserSubscription[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserSubscription {
+  id String @id @default(uuid())
+
+  // Subscription plan
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+
+  // User relation (1:1 for active, 1:N for history)
+  activeUserId  String? @unique
+  activeUser    User?   @relation("ActiveSubscription", fields: [activeUserId], references: [id])
+  historyUserId String
+  historyUser   User    @relation("SubscriptionHistory", fields: [historyUserId], references: [id])
+
+  // Period control
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime?
+
+  // Status
+  status      SubscriptionStatus @default(ACTIVE)
+  cancelledAt DateTime?
+
+  // Stripe integration
+  stripeSubscriptionId String? @unique
+
+  // Relations
+  bookings Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([activeUserId])
+  @@index([historyUserId])
+  @@index([status])
+  @@index([subscriptionId])
+}
+
+// ============================================
+// BOOKING MODEL
+// ============================================
+
+model Booking {
+  id        String   @id @default(uuid())
+  date      DateTime @db.Timestamptz
+  cancelled Boolean? @default(false)
+
+  // Service
+  serviceId String
+  service   BarberService @relation(fields: [serviceId], references: [id])
+
+  // User
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
+  // Subscription (optional - only if paid with subscription)
+  userSubscriptionId   String?
+  userSubscription     UserSubscription? @relation(fields: [userSubscriptionId], references: [id])
+  paidWithSubscription Boolean           @default(false)
+
+  // Payment
+  stripeChargeId String?
+  stripeEventId  String? @unique
+
+  // Cancellation
+  cancelledAt DateTime? @db.Timestamptz
+
+  // barbershopId String
+  // barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+
   @@index([serviceId])
+  @@index([userId])
   @@index([date])
-}
-
-model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  bookings      Booking[]
-
-  @@unique([email])
-  @@map("user")
-}
-
-model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([token])
-  @@map("session")
-}
-
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@map("account")
-}
-
-model Verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
-
-  @@map("verification")
+  @@index([userSubscriptionId])
 }
